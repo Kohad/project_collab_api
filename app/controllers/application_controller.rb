@@ -16,4 +16,15 @@ class ApplicationController < ActionController::API
   def current_user
     @current_user
   end
+
+  def authorize!(record, action)
+    policy = policy_for(record)
+    allowed = policy.public_send("#{action}?")
+
+    render json: { error: "Forbidden" }, status: :forbidden unless allowed
+  end
+
+  def policy_for(record)
+    "#{record.class}Policy".constantize.new(current_user, record)
+  end
 end
