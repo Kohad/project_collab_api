@@ -5,6 +5,8 @@ class User < ApplicationRecord
   validates :email, presence: true, uniqueness: true
   validates :role, presence: true, inclusion: { in: ROLES }
 
+  has_many :owned_projects, class_name: "Project", foreign_key: "owner_id", dependent: :destroy
+
   # Role helper methods
   def admin?
     role == "admin"
