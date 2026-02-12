@@ -63,13 +63,39 @@ Server runs on:
         This keeps controllers clean and reusable.
 
 
-📌 API Endpoints
+🔐 🔹 IMPORTANT — COMMON HEADER
+
+        For ALL requests (except unauthorized testing):
+
+        Header:
+
+            | Key          | Value            |
+            | ------------ | ---------------- |
+            | Content-Type | application/json |
+            | X-User-Id    | <user_id>        |
+
+        Seeded users:
+
+            | Role    | ID |
+            | ------- | -- |
+            | Admin   | 1  |
+            | Manager | 2  |
+            | Member  | 3  |
+
+
+
+📂 PROJECT ENDPOINTS
 
     Create Project
 
         POST /projects
 
-        json :
+        Who can access?
+
+            ✔ Admin
+            ✔ Manager
+
+        Body (raw → JSON):
             {
             "project": {
                     "title": "My Project",
@@ -82,19 +108,53 @@ Server runs on:
 
         GET /projects
 
+        Who can access?
+
+            ✔ All roles
+
+
     Update Project
 
         PUT /projects/:id
+
+        Who can access?
+
+            ✔ Admin
+            ✔ Owner (Manager)
+            ✔ Editor member
+        
+        Body:
+
+        {
+        "project": {
+            "title": "Updated Project Name"
+            }
+        }
+
+
 
     Delete Project
 
         DELETE /projects/:id
 
+        Who can access?
+
+            ✔ Admin
+            ✔ Owner
+
+        
+👥 MEMBERSHIP ENDPOINTS
+
     Add Member
 
         POST /projects/:id/members
 
-        json :
+        Who can access?
+
+            ✔ Admin
+            ✔ Project Owner
+
+        Body :
             {
             "membership": {
                 "user_id": 3,
@@ -102,10 +162,49 @@ Server runs on:
                 }
             }
 
+        OR
+
+            {
+            "membership": {
+                "user_id": 3,
+                "role": "editor"
+                }
+            }
+
+
 
     Remove Member
 
         DELETE /projects/:id/members/:user_id
+
+        Who can access?
+
+            ✔ Admin
+            ✔ Project Owner
+
+
+🚫 UNAUTHORIZED TEST
+
+    Remove header:
+
+        X-User-Id
+
+    Expected:
+
+        401 Unauthorized
+
+
+🎯 Full Role Testing Matrix
+
+    | Action         | Admin   | Manager  | Member Viewer  | Member Editor   |
+    | -------------- | -----   | -------  | -------------  | -------------   |
+    | Create Project | ✅     | ✅       | ❌             | ❌             |
+    | List Projects  | ✅     | ✅       | ✅             | ✅             |
+    | Update Project | ✅     | ✅       | ❌             | ✅             |
+    | Delete Project | ✅     | ✅       | ❌             | ❌             |
+    | Add Member     | ✅     | ✅       | ❌             | ❌             |
+    | Remove Member  | ✅     | ✅       | ❌             | ❌             |
+
 
 
 ✅ RBAC Rules Summary
