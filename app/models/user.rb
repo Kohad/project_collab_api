@@ -6,6 +6,8 @@ class User < ApplicationRecord
   validates :role, presence: true, inclusion: { in: ROLES }
 
   has_many :owned_projects, class_name: "Project", foreign_key: "owner_id", dependent: :destroy
+  has_many :project_memberships, dependent: :destroy
+  has_many :projects, through: :project_memberships
 
   # Role helper methods
   def admin?
